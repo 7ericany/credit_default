@@ -16,6 +16,57 @@ class(train)
 # show number of missing values in each col
 train %>% summarise_all(~ sum(is.na(.)))
 sapply(train, class)
+## 106 numerical features
+numeric_ftrs = colnames(train[, unlist(lapply(train, is.numeric))])
+## 16 categorical features
+cat_ftrs = setdiff(colnames(train), numeric_ftrs)
+
+############ Encode categorical features #############
+encode_ordinal <- function(x, order = unique(x)) {
+  x <- as.numeric(factor(x, levels = order, exclude = NULL))
+  x
+}
+
+## get the list of numeric features
+
+# fileConn<-file("categorical_mapping.txt")
+train_cat <- train[cat_ftrs]
+train_cat[train_cat==''] = '<NA>'
+
+df_encoding <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(df_encoding) <- c('feature', 'category', 'encoding')
+for (i in 1:16){
+  # sink(file = "categorical_mapping.txt", append = T)
+  # print(cat("No.", i, cat_ftrs[i]))
+  encoding <- encode_ordinal(train_cat[[cat_ftrs[i]]])
+  table <- table(train_cat[[cat_ftrs[i]]], encoding)
+  # train[[cat_ftrs[i]]] <- encoding
+  enc <- data.frame(category=rownames(table), encoding=as.numeric(colnames(table)),
+                    feature=matrix(cat_ftrs[i], length(colnames(table)), 1))
+  if ('<NA>' %in% enc$category){
+    enc$encoding <- enc$encoding - 1
+    enc$encoding[enc$encoding == 0] <- -1
+  }
+  df_encoding <- rbind(df_encoding, enc)
+  
+  
+  # map the values
+  ftr = cat_ftrs[i]
+  for (k in 1:nrow(enc)){
+    tmp_cate = enc$category[k]
+    train_cat[ftr][train_cat[ftr] == tmp_cate] = enc$encoding[k]
+  }
+  # print(colnames((table)), rownames(table))
+  # print(cat("------------------------------------------------"))
+  # sink()
+}
+write.csv(df_encoding, "categorical_encoding.csv")
+train[cat_ftrs] = train_cat
+
+
+
+
+
 
 ##################### basic basic model ########################
 # just to get a sense
