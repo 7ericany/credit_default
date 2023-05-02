@@ -1,0 +1,4 @@
+1. Data preprocessing:
+  i) Check columns with NA values and removal above threshold (40%)
+  ii) Check columns with '0' values and remove if above 90%
+  iii) Check for correlation between columns and remove a column when corr is >0.9
