@@ -20,7 +20,8 @@ library(lares)
 ```
 
 ```{r}
-application_train <- read_csv("./application_train.csv")
+data_folder = "../home-credit-default-risk/"
+application_train = read.csv(paste(data_folder, "application_train_encoded.csv", sep=''))
 head(application_train)
 ```
 ```{r}
@@ -73,9 +74,6 @@ application_train_df
 
 ```{r}
 nums <- application_train_df |> select(where(is.numeric))
-
-```
-```{r}
 dim(nums)
 ```
 
@@ -90,14 +88,6 @@ FLAG_EMP_PHONE, OBS_30_CNT_SOCIAL_CIRCLE, OBS_30_CNT_SOCIAL_CIRCLE, AMT_GOODS_PR
 application_train_df <- application_train_df|> select(-c(FLAG_EMP_PHONE, OBS_30_CNT_SOCIAL_CIRCLE, OBS_30_CNT_SOCIAL_CIRCLE, AMT_GOODS_PRICE))
 head(application_train_df)
 ```
-```{r}
-
-```
-
-
-
-
-
 
 ```{r}
 #Generating KDE/Histogram for the numeric covariates in the dataframe above
@@ -115,3 +105,8 @@ for (col in names(application_train_df)[numeric_cols]) {
   print(plot_var(application_train_df, col))
 }
 ```
+
+```{r}
+write.csv(application_train_df, "./data_cleaned/train_encode_cleaned.csv")
+```
+
