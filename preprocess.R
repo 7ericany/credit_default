@@ -6,7 +6,7 @@ library(dplyr)
 library(ggcorrplot)
 
 ##################### Load training data ########################
-data_folder = "~/Downloads/home-credit-default-risk/"
+data_folder = "../home-credit-default-risk/"
 train = as.data.frame(read.csv(paste(data_folder, "application_train.csv", sep='')))
 # convert to data frame
 # train <- do.call(rbind.data.frame, train)
@@ -60,10 +60,12 @@ for (i in 1:16){
   # print(cat("------------------------------------------------"))
   # sink()
 }
-write.csv(df_encoding, "categorical_encoding.csv")
+
+# write.csv(df_encoding, "categorical_encoding.csv")
 train[cat_ftrs] = train_cat
 
-
+write.csv(train, (paste(data_folder,"application_train_encoded.csv")),
+          row.names = FALSE)
 
 
 
