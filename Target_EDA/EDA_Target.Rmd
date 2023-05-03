@@ -1,0 +1,36 @@
+---
+title: "Target_EDA"
+output: html_document
+date: "2023-05-03"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+```
+
+```{r}
+imputed_data_df = read.csv(paste("/Users/hari/Downloads/Project_DATA2020/imputed_data.csv", sep=''))
+```
+
+```{r}
+#############################
+#                           #
+# Plot for Target Imbalance #
+#                           #
+#############################
+
+# Plot the distribution of the target column with colored bars
+ggplot(imputed_data_df, aes(x = factor(TARGET))) + 
+  geom_bar(aes(fill = factor(TARGET))) + 
+  scale_fill_brewer(palette = "Set2", name = "Target",
+                    labels = c("Non-default", "Default")) +
+  labs(title = "Distribution of Target", x = "TARGET", y = "Count") +
+  theme(plot.title = element_text(hjust = 0.5)) +scale_y_continuous(labels = scales::comma_format())
+```
+
