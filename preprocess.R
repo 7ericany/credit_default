@@ -6,8 +6,8 @@ library(dplyr)
 library(ggcorrplot)
 
 ##################### Load training data ########################
-data_folder = "../home-credit-default-risk/"
-train = as.data.frame(read.csv(paste(data_folder, "application_train.csv", sep='')))
+data_folder = "./preprocessed/"
+train = as.data.frame(read.csv(paste(data_folder, "application_train_preprocessed.csv", sep='')))
 # convert to data frame
 # train <- do.call(rbind.data.frame, train)
 class(train)
@@ -23,7 +23,7 @@ cat_ftrs = setdiff(colnames(train), numeric_ftrs)
 
 ############ Encode categorical features #############
 encode_ordinal <- function(x, order = unique(x)) {
-  x <- as.numeric(factor(x, levels = order, exclude = NULL))
+  x <- as.numeric(factor(x, levels = order))
   x
 }
 
@@ -35,13 +35,14 @@ train_cat[train_cat==''] = '<NA>'
 
 df_encoding <- data.frame(matrix(ncol = 3, nrow = 0))
 colnames(df_encoding) <- c('feature', 'category', 'encoding')
-for (i in 1:16){
+for (i in 1:length(cat_ftrs)){
   # sink(file = "categorical_mapping.txt", append = T)
   # print(cat("No.", i, cat_ftrs[i]))
   encoding <- encode_ordinal(train_cat[[cat_ftrs[i]]])
   table <- table(train_cat[[cat_ftrs[i]]], encoding)
   # train[[cat_ftrs[i]]] <- encoding
-  enc <- data.frame(category=rownames(table), encoding=as.numeric(colnames(table)),
+
+  enc <- data.frame(category=rownames(table), encoding=colnames(table),
                     feature=matrix(cat_ftrs[i], length(colnames(table)), 1))
   if ('<NA>' %in% enc$category){
     enc$encoding <- enc$encoding - 1
@@ -61,7 +62,7 @@ for (i in 1:16){
   # sink()
 }
 
-# write.csv(df_encoding, "categorical_encoding.csv")
+write.csv(df_encoding, "categorical_encoding.csv")
 train[cat_ftrs] = train_cat
 
 write.csv(train, (paste(data_folder,"application_train_encoded.csv")),
