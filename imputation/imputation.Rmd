@@ -80,12 +80,6 @@ num_imputed_data <- complete(num_impute)
 cat_imputed_data <- complete(cat_impute)
 ```
 
-```{r}
-#Add ID column
-num_imputed_data$SK_ID_CURR <- application_train$SK_ID_CURR
-cat_imputed_data$SK_ID_CURR <- application_train$SK_ID_CURR
-```
-
 
 ```{r}
 #Combine imputed data frames
