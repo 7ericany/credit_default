@@ -26,8 +26,12 @@ for (i in 1:length(folds)) {
   actual_class <- test_data$TARGET
   
   #We have to choose a different metric (TP/FP/TN/FN)
-  accuracy <- mean(predicted_class == actual_class)
+  conf_matrix <- confusionMatrix(predicted_class, actual_class)
   
-  print(paste0("Fold ", i, " accuracy: ", accuracy))
+  # extract precision and recall from the confusion matrix 
+  precision <- conf_matrix$byClass["Pos Pred Value"]
+  recall <- conf_matrix$byClass["Sensitivity"]
+  
+  print(paste0("Fold ", i, " Precision: ", precision, "Recall", recall))
 }
 
