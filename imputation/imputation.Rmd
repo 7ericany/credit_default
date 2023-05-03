@@ -18,7 +18,7 @@ library(mice)
 
 ```{r}
 #Load the preprocessed dataset
-application_train_preprocessed = read.csv(paste("/Users/hari/Downloads/Project_DATA2020/application_train_encoded.csv", sep=''))
+application_train_preprocessed = read.csv(paste("~./application_train_encoded.csv", sep=''))
 head(application_train_preprocessed)
 ```
 
