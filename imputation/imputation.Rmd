@@ -1,0 +1,110 @@
+---
+title: "imputation"
+output: pdf_document
+date: "2023-04-19"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(mice)
+```
+
+```{r}
+#Load original train dataset
+application_train = read.csv(paste("~./application_train.csv", sep=''))
+```
+
+
+```{r}
+#Load the preprocessed dataset
+application_train_preprocessed = read.csv(paste("~./application_train_encoded.csv", sep=''))
+head(application_train_preprocessed)
+```
+
+
+
+```{r}
+#Rows and columns of preprocessed data
+dim(application_train_preprocessed)
+```
+
+```{r}
+# Remove the TARGET column to impute missing values only for the predictor variables
+application_train_preprocessed_X <- application_train_preprocessed[, -which(names(application_train_preprocessed) == "TARGET")]
+application_train_preprocessed_X
+```
+
+
+```{r}
+#Identify columns with missing values
+missing_cols <- names(application_train_preprocessed)[sapply(application_train_preprocessed, function(x) anyNA(x))]
+missing_cols
+```
+We have split the missing columns into numeric and categorical columns to appropriately apply the respective imputation methods for each type. 
+For numeric columns we are using 'pmm' method and for categorical columns we are using 'polyreg' since it is nominal type.
+
+```{r}
+#Numeric missing columns
+num_vars <- c("AMT_ANNUITY","CNT_FAM_MEMBERS", 
+                  "EXT_SOURCE_2", "EXT_SOURCE_3", "DEF_30_CNT_SOCIAL_CIRCLE", 
+                  "OBS_60_CNT_SOCIAL_CIRCLE", "DEF_60_CNT_SOCIAL_CIRCLE", 
+                  "DAYS_LAST_PHONE_CHANGE", "AMT_REQ_CREDIT_BUREAU_HOUR", 
+                  "AMT_REQ_CREDIT_BUREAU_DAY", "AMT_REQ_CREDIT_BUREAU_WEEK", 
+                  "AMT_REQ_CREDIT_BUREAU_MON", "AMT_REQ_CREDIT_BUREAU_QRT", 
+                  "AMT_REQ_CREDIT_BUREAU_YEAR")
+
+#Categorical missing columns
+cat_vars <- c("NAME_TYPE_SUITE", "OCCUPATION_TYPE")
+```
+
+```{r}
+# Impute missing numeric variables using PMM
+num_impute <- mice(application_train_preprocessed_X[, num_vars], method = "pmm")
+```
+
+```{r}
+# Impute categorical variables using polyreg
+cat_impute <- mice(application_train_preprocessed_X[, cat_vars], method = "polyreg")
+```
+
+```{r}
+# Complete the imputed datasets
+num_imputed_data <- complete(num_impute)
+cat_imputed_data <- complete(cat_impute)
+```
+
+
+```{r}
+#Combine imputed data frames
+imputed_data <- bind_cols(num_imputed_data, cat_imputed_data)
+
+#Add target column back to data frame
+target_col <- application_train_preprocessed$TARGET 
+imputed_data <- cbind(imputed_data, target_col)
+```
+
+
+```{r}
+#Check if any missing values remain
+colSums(is.na(imputed_data))
+```
+```{r}
+#Replace original columns with imputed columns
+vars_to_impute = c(num_vars,cat_vars)
+application_train_imputed <- application_train_preprocessed
+application_train_imputed[, vars_to_impute] <- imputed_data[, vars_to_impute]
+```
+
+
+```{r}
+# Save the imputed dataset as a CSV file
+write.csv(application_train_imputed, file = "imputed_data.csv", row.names = FALSE)
+```
+
