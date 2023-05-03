@@ -18,20 +18,20 @@ library(mice)
 
 ```{r}
 #Load original train dataset
-application_train = read.csv(paste("/Users/hari/Downloads/Project_DATA2020/application_train.csv", sep=''))
+application_train = read.csv(paste("~./application_train.csv", sep=''))
 ```
 
 
 ```{r}
 #Load the preprocessed dataset
-application_train_preprocessed = read.csv(paste("/Users/hari/Downloads/Project_DATA2020/application_train_encoded.csv", sep=''))
+application_train_preprocessed = read.csv(paste("~./application_train_encoded.csv", sep=''))
 head(application_train_preprocessed)
 ```
 
 
 
 ```{r}
-#Rows and columns of train data
+#Rows and columns of preprocessed data
 dim(application_train_preprocessed)
 ```
 
