@@ -47,7 +47,8 @@ application_train_preprocessed_X
 missing_cols <- names(application_train_preprocessed)[sapply(application_train_preprocessed, function(x) anyNA(x))]
 missing_cols
 ```
-We have split the missing columns into numeric and categorical columns to appropriately apply the respective imputation methods for each type. For numeric columns we are using 'pmm' method and for categorical columns we are using 'polyreg' since it is nominal type.
+We have split the missing columns into numeric and categorical columns to appropriately apply the respective imputation methods for each type. 
+For numeric columns we are using 'pmm' method and for categorical columns we are using 'polyreg' since it is nominal type.
 
 ```{r}
 #Numeric missing columns
