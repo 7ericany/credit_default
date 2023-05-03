@@ -1,11 +1,11 @@
 library(dslabs)
 library(tidyverse)
 library(dplyr)
-library(car)
+#library(car)
 library(ggplot2)
 library(caret)
 
-data <- as.data.frame(read.csv("imputation/imputed_data.csv"))
+data <- as.data.frame(read.csv("/Users/radhikamehrotra/Documents/DATA2020/credit_fraud/imputation/imputed_data.csv"))
 target <- data$TARGET
 # remove TARGET column
 data <- data[, -which(names(data) == "TARGET")]
@@ -38,24 +38,30 @@ data <- as.data.frame(data[-indices, ])
 ################# Logistic regression modeling ####################
 
 # define the indices for stratified K-fold cross-validation
-folds <- createFolds(data$TARGET, k = 10, list = TRUE, 
+model_data <- data
+model_data$TARGET <- target
+folds <- createFolds(target, k = 2, list = TRUE, 
                      returnTrain = TRUE)
 
 # train and evaluate the model using stratified K-fold cross-validation
 for (i in 1:length(folds)) {
-  train_data <- data[folds[[i]], ]
-  test_data <- data[-folds[[i]], ]
+  train_data <- model_data[folds[[i]], ]
+  test_data <- model_data[-folds[[i]], ]
+  
+  
   
   # your model training code goes here
   # for example:
-  model <- glm(target_variable ~ ., data = train_data, family = "binomial")
+  model <- glm(TARGET ~ ., data = train_data, family = "binomial")
   
   # your model evaluation code goes here
   # for example:
   predicted <- predict(model, newdata = test_data, type = "response")
   threshold <- 0.5
-  predicted_class <- ifelse(predicted > threshold, 1, 0)
-  actual_class <- test_data$TARGET
+  predicted_class <- as.factor(ifelse(predicted > threshold, 1, 0))
+  #print(class(predicted_class))
+  actual_class <- as.factor(test_data$TARGET)
+  #print(class(actual_class))
   
   #We have to choose a different metric (TP/FP/TN/FN)
   conf_matrix <- confusionMatrix(predicted_class, actual_class)
