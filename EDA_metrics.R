@@ -6,6 +6,9 @@ library(ggplot2)
 library(ggcorrplot)
 
 data <- as.data.frame(read.csv("imputation/imputed_data.csv"))
+target <- data$TARGET
+# remove TARGET column
+data <- data[, -which(names(data) == "TARGET")]
 data <- scale(data)
 # data <- data[3:56] # get rid of the ID and fake_id columns
 
@@ -17,17 +20,21 @@ distances <- apply(data, 1, euc_dist2)
 all_sum <- sum(distances)
 hat.x <- (1 / length(distances)) + distances / all_sum
 hat.df <- as.data.frame(hat.x)
+cutoff = 2 * 1e-5
 ggplot(hat.df, aes(x=hat.x))+ 
   geom_histogram(binwidth = 0.001) +
   scale_x_log10() +
-  geom_vline(xintercept=3 * 1e-5, linetype="dashed", 
+  geom_vline(xintercept=cutoff, linetype="dashed", 
              color = "red", size=0.3) + 
   xlab("Log scale leverage") 
 
-cutoff = 3 * 1e-5
+
 # how many to drop?
 length(hat.df$hat.x[hat.df$hat.x > cutoff])
-# 
+# drop
+indices <- which(hat.df$hat.x > cutoff)
+target <- target[-indices]
+data_new <- as.data.frame(data[-indices, ])
 
 ########################
 # POST-STEP for modeling
