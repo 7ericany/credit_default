@@ -103,6 +103,22 @@ write.csv(application_train_df, "./application_train_preprocessed.csv", row.name
 
 
 
+```{r}
+#Generating KDE/Histogram for the numeric covariates in the dataframe above
+plot_var <- function(data, col) {
+  ggplot(data, aes(x = !!as.name(col))) +
+    geom_histogram(aes(y = ..density..), color = "black", fill = "white") +
+    geom_density(alpha = 0.5, size = 1) +
+    ggtitle(paste0("KDE and Histogram of ", col)) +
+    xlab(col)
+}
+
+# loop over numeric columns and create plots
+numeric_cols <- sapply(application_train_df, is.numeric)
+for (col in names(application_train_df)[numeric_cols]) {
+  print(plot_var(application_train_df, col))
+}
+```
 
 
 
