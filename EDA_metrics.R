@@ -5,19 +5,49 @@ library(car)
 library(ggplot2)
 library(ggcorrplot)
 
-data <- as.data.frame(read.csv("data_cleaned/train_encode_cleaned.csv"))
-data <- data[3:56] # get rid of the ID and fake_id columns
+data <- as.data.frame(read.csv("imputation/imputed_data.csv"))
+target <- data$TARGET
+# remove TARGET column
+data <- data[, -which(names(data) == "TARGET")]
+data <- scale(data)
+# data <- data[3:56] # get rid of the ID and fake_id columns
 
 ################# Calculate leverage scores for each sample ####################
+# ISLRv2 p99 (formula 3.37)
+middle_point <- colMeans(data)
+euc_dist2 <- function(x) {sum((x - middle_point)^2)}
+distances <- apply(data, 1, euc_dist2)
+all_sum <- sum(distances)
+hat.x <- (1 / length(distances)) + distances / all_sum
+hat.df <- as.data.frame(hat.x)
+cutoff = 2 * 1e-5
+ggplot(hat.df, aes(x=hat.x))+ 
+  geom_histogram(binwidth = 0.001) +
+  scale_x_log10() +
+  geom_vline(xintercept=cutoff, linetype="dashed", 
+             color = "red", size=0.3) + 
+  xlab("Log scale leverage") 
+
+
+# how many to drop?
+length(hat.df$hat.x[hat.df$hat.x > cutoff])
+# drop
+indices <- which(hat.df$hat.x > cutoff)
+target <- target[-indices]
+data_new <- as.data.frame(data[-indices, ])
+
+########################
+# POST-STEP for modeling
+########################
 
 
 
-### PRE-STEP for modeling
+
+
+
 
 ################### Calculate VIF scores for each feature ######################
 # Note: this step should execute AFTER imputation
-# Drop FLAG_MOBIL
-data <- data[, -which(names(data) == "FLAG_MOBIL")]
 cor_matrix = as.data.frame(cor(data, use='pairwise.complete.obs'))
 # FLAG_DOCUMENT_2
 # ggcorrplot(cor_matrix)
