@@ -1,0 +1,119 @@
+---
+title: "model"
+output: html_document
+date: "2023-05-03"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(caret)
+```
+
+```{r}
+#Load the imputed dataset
+imputed_data_df <- read.csv(paste("/Users/hari/Downloads/Project_DATA2020/imputed_data.csv", sep=''))
+```
+
+```{r}
+#Remove TARGET
+imputed_data_df_X <- imputed_data_df[, -which(names(imputed_data_df) == "TARGET")]
+```
+
+
+```{r}
+library(caTools)
+set.seed(7)
+#Split the dataset in to train and test
+
+train_index <- sample.split(Y = imputed_data_df$TARGET , SplitRatio = 0.7)
+
+train_data <- imputed_data_df[train_index, ]
+test_data <- imputed_data_df[!train_index, ]
+```
+
+
+
+```{r}
+#Logisitc Regression Model
+set.seed(7)
+logit_model <- glm(data = train_data ,
+                   formula = TARGET~. ,
+                   family = "binomial" )
+
+logit_pred <- predict(object = logit_model,
+                      newdata = test_data ,
+                      type = "response" )
+
+```
+
+```{r}
+#Summary of our model
+summary(logit_model)
+```
+
+
+```{r}
+#confusion matrix
+table(test_data$TARGET, logit_pred>0.55)
+```
+
+```{r}
+#Plot the ROC curve
+roc.curve(test_data$TARGET, logit_pred)
+```
+
+
+```{r}
+library(ROSE)
+######################## Undersampling
+
+#Downsampling the training data
+data_downsample <- ovun.sample(TARGET~. ,
+                               data = imputed_data_df ,
+                               method = "under")$data
+#Check the balance
+table(data_downsample$TARGET)
+```
+
+```{r}
+#Build logit model with undersampled data
+ds_model <- glm(TARGET~. , data = data_downsample, family = "binomial")
+ds_pred <- predict(object = ds_model, newdata = test_data , type = "response")
+
+#Plot the ROC curve
+roc.curve(test_data$TARGET, logit_pred)
+```
+```{r}
+#Confusion matrix
+table(test_data$TARGET, logit_pred >0.5)
+```
+
+```{r}
+#summary of new logit model with undersampled data
+summary(ds_model)
+```
+
+
+
+```{r}
+#Odds ratio for new model
+mat <- summary(ds_model)$coefficients
+
+confirm<-function(mat)
+{
+    oddsratio<-exp(mat[,1])
+    int<-matrix(c((exp(mat[,1]-1.96*mat[,2])),(exp(mat[,1]+1.96*mat[,2]))),nrow(mat),2)
+    OCI<-cbind(oddsratio,int)
+    OCI<-round(OCI,digits=3)
+    dimnames(OCI)[[2]]<-c("OR","LCI","UCI")
+    return(OCI)
+}
+confirm(mat)
+```
+
