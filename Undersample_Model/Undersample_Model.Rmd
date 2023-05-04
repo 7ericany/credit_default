@@ -89,6 +89,10 @@ ds_pred <- predict(object = ds_model, newdata = test_data , type = "response")
 #Plot the ROC curve
 roc.curve(test_data$TARGET, logit_pred)
 ```
+```{r}
+#Confusion matrix
+table(test_data$TARGET, logit_pred >0.5)
+```
 
 ```{r}
 #summary of new logit model with undersampled data
