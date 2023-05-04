@@ -1,0 +1,82 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-05-03"
+---
+
+```{r}
+library(ROSE)
+library(randomForest)
+library(caret)
+library(e1071)
+library(ggplot2)
+library(reshape2)
+library(dslabs)
+library(tidyverse)
+library(dplyr)
+library(ggcorrplot)
+library(tidyverse)
+library(lares)
+require(knitr) 
+require(caret)  
+require(ROSE) 
+require(rpart)
+```
+
+```{r}
+data <- read.csv("./imputation/imputed_data.csv", header = TRUE)
+```
+
+
+```{r}
+barplot(prop.table(table(data$TARGET)),
+        col = rainbow(2),
+        ylim = c(0, 0.7),
+        main = "Class Distribution")
+```
+
+```{r}
+set.seed(42)
+ind <- sample(2, nrow(data), replace = TRUE, prob = c(0.7, 0.3))
+train <- data[ind==1,]
+test <- data[ind==2,]
+```
+
+```{r}
+table(train$TARGET)
+```
+```{r}
+prop.table(table(train$TARGET))
+```
+```{r}
+under <- ovun.sample(TARGET~., data = train, method = "under")$data
+table(under$TARGET)
+```
+
+```{r}
+rfunder <- randomForest(TARGET~., data = under)
+```
+
+
+```{r}
+  pred <- predict(rfunder, test, type="response")
+
+    
+#Checking the accuracy of the logistic model
+```
+```{r}
+table(test$TARGET, pred>0.5)
+```
+```{r}
+table(test$TARGET, pred>0.3)
+```
+
+
+```{r}
+roc.curve(test$TARGET, pred)
+#roc.curve(test$TARGET, pred, add.roc=TRUE, col=2)
+```
+```{r}
+
+```
+
