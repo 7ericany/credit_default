@@ -26,7 +26,8 @@ ggplot(hat.df, aes(x=hat.x))+
   scale_x_log10() +
   geom_vline(xintercept=cutoff, linetype="dashed", 
              color = "red", size=0.3) + 
-  xlab("Log scale leverage") 
+  xlab("Log scale leverage") +
+  ggtitle("Histogram of sample leverage values")
 
 
 # how many to drop?
