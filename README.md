@@ -1,5 +1,5 @@
-![hustlin_erd](poster.pdf)
-
+<object data="https://github.com/7ericany/credit_default/blob/main/poster.pdf" type="application/pdf" width="100%"> 
+</object>
 
 ## Link to Google Drive 
 https://drive.google.com/drive/folders/10h8mCIVqBw-NZzA0HmOvoISMbtZywqY4?usp=sharing
