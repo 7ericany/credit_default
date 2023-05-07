@@ -6,7 +6,7 @@ library(ggplot2)
 library(caret)
 
 ###################### model.r in github
-data <- read.csv(paste("~/Downloads/DATA2020/credit_fraud/imputation/imputed_data.csv", sep=''))
+data <- read.csv(paste("~/Downloads/DATA2020/credit_fraud/data/imputation/imputed_data.csv", sep=''))
 target <- data$TARGET
 
 # remove TARGET column
@@ -139,7 +139,27 @@ ggplot(data=error_bar, aes(x=features, y=estimate_odds, group=1))  +
   # scale_x_discrete(labels=) +
   theme_bw()
 
-# bootstrap
+
+
+features <- c("Gender", 
+              "CNT_Children", 
+              "Region_city", 
+              "Document", 
+              "Education","Ext_source","Own_car") 
+zvalue <- c(19.022162, 7.276629, 5.562154, 6.195749, 17.711327,39.596287,11.707348)
+dbar <- data.frame(zvalue=zvalue, features=features)
+dbar$features <- factor(dbar$features, levels = dbar$features[order(dbar$zvalue, decreasing = TRUE)])
+ggplot(data=dbar, aes(x=features, y=zvalue)) +
+  geom_bar(position="dodge", stat="identity", fill="lightblue") +
+  theme_bw() +
+  ylab("Absolute z-value") +
+  ggtitle("Wald test Z-score") +
+  geom_hline(yintercept=3.2905, linetype="dashed", 
+             color = "red")
+  
+
+################################# Bootstrap ####################################
+################################################################################
 
 n_boots <- 10
 betas <- matrix(NA, n_boots, 5)
