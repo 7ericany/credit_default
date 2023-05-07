@@ -1,4 +1,4 @@
-[Check out our poster here!]([poster.pdf](https://github.com/7ericany/credit_default/blob/main/poster.pdf))
+[Check out our poster here!](https://github.com/7ericany/credit_default/blob/main/poster.pdf)
 
 ## Link to Google Drive 
 https://drive.google.com/drive/folders/10h8mCIVqBw-NZzA0HmOvoISMbtZywqY4?usp=sharing
