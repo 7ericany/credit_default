@@ -1,3 +1,6 @@
+![hustlin_erd](poster.pdf)
+
+
 ## Link to Google Drive 
 https://drive.google.com/drive/folders/10h8mCIVqBw-NZzA0HmOvoISMbtZywqY4?usp=sharing
 
@@ -13,7 +16,7 @@ https://www.kaggle.com/competitions/home-credit-default-risk/data
 	
 2. Missing value in numerical features
 	- percentage: drop > threshold; non-important interpretation
-	- imputation (maybe not)
+	- imputation (MICE)
 
 3. **Visualization**
 	- Imbalance
@@ -26,6 +29,6 @@ https://www.kaggle.com/competitions/home-credit-default-risk/data
 	- heatmap; redundancy (constant feature)
 
 4. Modeling
-	- Dimension reduction, factor analysis
+	- Dimension reduction, factor analysis (failed KMO test)
 	- Logistic, forward/backward; cross validation
 	- multi collinearity (VIF)
